@@ -10,6 +10,8 @@ const DONATIONS: Symbol = symbol_short!("donations");
 const CAMPAIGN_OWNER: Symbol = symbol_short!("owner");
 const XLM_TOKEN_ADDRESS: Symbol = symbol_short!("xlm_addr");
 const IS_ALREADY_INIT: Symbol = symbol_short!("is_init");
+// Fungsi NFT
+const NFT_CONTRACT: Symbol = symbol_short!("nft_addr");
 
 // Contract struct
 #[contract]
@@ -41,6 +43,8 @@ impl CrowdfundingContract {
         env.storage().instance().set(&CAMPAIGN_DEADLINE, &deadline);
         env.storage().instance().set(&TOTAL_RAISED, &0i128);
         env.storage().instance().set(&XLM_TOKEN_ADDRESS, &xlm_token);
+        // parameter nft_contract: Address dan simpan
+        env.storage().instance().set(&NFT_CONTRACT, &nft_contract);
 
         // Set initialization flag to true
         env.storage().instance().set(&IS_ALREADY_INIT, &true);
@@ -80,6 +84,9 @@ impl CrowdfundingContract {
         let mut total: i128 = env.storage().instance().get(&TOTAL_RAISED).unwrap();
         total += amount;
         env.storage().instance().set(&TOTAL_RAISED, &total);
+
+        // setelah transfer & update raised berhasil:
+        let nft_addr: Address = env.storage().instance().get(&NFT_CONTRACT).unwrap();
 
         // Track donasi individual donor
         let mut donations: Map<Address, i128> = env.storage().instance().get(&DONATIONS).unwrap();
